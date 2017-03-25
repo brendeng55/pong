@@ -149,12 +149,14 @@ def displaySpeed(speed):
     DISPLAY_SURF.blit(resultSurf3, resultRect3)    
     
 def displayPowerup(score1, count1, score2, count2):
+    #Player 1
     if(score1 % 2 == 1) and (count1 % 2 == 1):
         resultSurf4 = BASIC_FONT.render('Speed Boost Available!', True, RED)
         resultRect4 = resultSurf4.get_rect()
         resultRect4.topleft = (350, 50)
         DISPLAY_SURF.blit(resultSurf4, resultRect4)
         
+    #Plater 2
     if(score2 % 2 == 1) and (count2 % 2 == 1):
         resultSurf5 = BASIC_FONT.render('Speed Boost Available!', True, BLUE)
         resultRect5 = resultSurf5.get_rect()
@@ -174,6 +176,7 @@ def main():
     
     #Enable gestures
     controller.enable_gesture(Leap.Gesture.TYPE_CIRCLE);  
+    controller.enable_gesture(Leap.Gesture.TYPE_SWIPE);
 
     #while(not frame.is_valid):
         #frame = controller.frame()
@@ -196,9 +199,12 @@ def main():
     ballDirX = LEFT
     ballDirY = UP
     
+    #Initialize variables
     speed = 1.5
     count1 = 1
     count2 = 1
+    swipePoint1 = 0
+    swipePoint2 = 0
 
     playerOnePaddle = pygame.Rect(PADDLE_OFFSET, playerOnePosition,
                                   LINE_THICKNESS, PADDLE_SIZE)
@@ -235,11 +241,23 @@ def main():
                 if handType == "Left hand":
                     #we are player 1                    
                     for gesture in frame.gestures():
+                        
+                        #Determine if swipe occurs
+                        if gesture.type == Leap.Gesture.TYPE_SWIPE:
+                            swipe = SwipeGesture(gesture)
+                            
+                            #If at least two points behind, add a point by swiping                         
+                            if ((score1 - score2) >= 2) and (swipePoint1 == 0):
+                                score1 += 1
+                                swipePoint1 += 1
+                                print "Left Hand Power Swipe!"
+                                               
+                        
                         if gesture.type == Leap.Gesture.TYPE_CIRCLE:
                             circle = CircleGesture(gesture)                           
                             #Determine clock direction using the angle between the pointable and the circle normal
                             #This was taken right from the Sample.py file located in the SDK
-                            if (circle.pointable.direction.angle_to(circle.normal) <= Leap.PI/2) and score1 % 2 == 1 and count1 % 2 == 1:
+                            if (circle.pointable.direction.angle_to(circle.normal) <= Leap.PI/2) and (score1 % 2 == 1) and (count1 % 2 == 1):
                                 print "Left Hand Speed up gesture activated!"                     
                                 speed+=1
                                 print 'Speed', speed
@@ -253,11 +271,24 @@ def main():
                 else:
                     #we are player 2                    
                     for gesture in frame.gestures():
+                        
+                        #Determine if swipe occurs
+                        if gesture.type == Leap.Gesture.TYPE_SWIPE:
+                            swipe = SwipeGesture(gesture)
+                                                        
+                            #If at least two points behind, add a point by swiping
+                            if ((score2 - score1) >= 2) and (swipePoint2 == 0):
+                                score2 += 1
+                                swipePoint2 += 1
+                                print "Right Hand Power Swipe!"
+                                                 
+                        
+                        
                         if gesture.type == Leap.Gesture.TYPE_CIRCLE:
                             circle = CircleGesture(gesture)                                                
                             #Determine clock direction using the angle between the pointable and the circle normal
                             #This was taken right from the Sample.py file located in the SDK                            
-                            if (circle.pointable.direction.angle_to(circle.normal) <= Leap.PI/2) and score2 == 1 and count2 == 1:
+                            if (circle.pointable.direction.angle_to(circle.normal) <= Leap.PI/2) and (score2 % 2 == 1) and (count2 % 2 == 1):
                                 print "Right Hand Speed up gesture activated!"                     
                                 speed+=1
                                 print 'Speed', speed
