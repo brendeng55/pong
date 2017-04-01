@@ -161,8 +161,21 @@ def displayPowerup(score1, count1, score2, count2):
         resultSurf5 = BASIC_FONT.render('Speed Boost Available!', True, BLUE)
         resultRect5 = resultSurf5.get_rect()
         resultRect5.topleft = (WINDOW_WIDTH - 570, 50)
-        DISPLAY_SURF.blit(resultSurf5, resultRect5)  
-
+        DISPLAY_SURF.blit(resultSurf5, resultRect5)
+        
+def displaySwipePowerUp(score1, score2, swipeCount1, swipeCount2):
+    #player 1   
+    if(((score2 - score1) >= 2 and swipeCount1 == 0)):           
+        resultSurf7 = BASIC_FONT.render('Swipe Boost Available!', True, RED) 
+        resultRect7 = resultSurf7.get_rect()
+        resultRect7.topleft = (350, 80)
+        DISPLAY_SURF.blit(resultSurf7, resultRect7)         
+    #player 2
+    if(((score1 - score2) >= 2) and swipeCount2 == 0):
+        resultSurf6 = BASIC_FONT.render('Swipe Boost Available!', True, BLUE)
+        resultRect6 = resultSurf6.get_rect()
+        resultRect6.topleft = (WINDOW_WIDTH - 570, 80)
+        DISPLAY_SURF.blit(resultSurf6, resultRect6)        
 
 def reset():
     ballx = WINDOW_WIDTH/2 - LINE_THICKNESS/2
@@ -247,8 +260,9 @@ def main():
                             swipe = SwipeGesture(gesture)
                             
                             #If at least two points behind, add a point by swiping                         
-                            if ((score1 - score2) >= 2) and (swipePoint1 == 0):
+                            if ((score2 - score1) >= 2) and (swipePoint1 == 0):
                                 score1 += 1
+                                speed+= .5
                                 swipePoint1 += 1
                                 print "Left Hand Power Swipe!"
                                                
@@ -277,8 +291,9 @@ def main():
                             swipe = SwipeGesture(gesture)
                                                         
                             #If at least two points behind, add a point by swiping
-                            if ((score2 - score1) >= 2) and (swipePoint2 == 0):
+                            if ((score1 - score2) >= 2) and (swipePoint2 == 0):
                                 score2 += 1
+                                speed+= .5
                                 swipePoint2 += 1
                                 print "Right Hand Power Swipe!"
                                                  
@@ -322,6 +337,7 @@ def main():
         #Display new scores, powerups, and speed
         displayScore(score1, score2, speed)
         displayPowerup(score1, count1, score2, count2)
+        displaySwipePowerUp(score1, score2, swipePoint1, swipePoint2)
         displaySpeed(speed)
         pygame.display.update()
 
